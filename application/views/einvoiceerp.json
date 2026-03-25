@@ -1,0 +1,370 @@
+ $signedInvoice = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjE1MTNCODIxRUU0NkM3NDlBNjNCODZFMzE4QkY3MTEwOTkyODdEMUYiLCJ4NXQiOiJGUk80SWU1R3gwbW1PNGJqR0w5eEVKa29mUjgiLCJ0eXAiOiJKV1QifQ.eyJkYXRhIjoie1wiU2VsbGVyR3N0aW5cIjpcIjI5QUFCQ1QxMzMyTDAwMFwiLFwiQnV5ZXJHc3RpblwiOlwiMzNBRFhQVDMyOTFOMlpKXCIsXCJEb2NOb1wiOlwiSU5WLzIzLTI0Ly0wMDhcIixcIkRvY1R5cFwiOlwiSU5WXCIsXCJEb2NEdFwiOlwiMDMvMDgvMjAyM1wiLFwiVG90SW52VmFsXCI6MTc3MCxcIkl0ZW1DbnRcIjoxLFwiTWFpbkhzbkNvZGVcIjpcIjg1MDMwMFwiLFwiSXJuXCI6XCJhZGU2Mjk3ZTM1NmM1OGJjMTcyZWNhMDY4NjlkODkxM2I4MGFjODk3ZTVkNmVmNGIzMWRiY2JkYjgzMDBmNDE1XCIsXCJJcm5EdFwiOlwiMjAyMy0wOC0wMyAxMjowOTowMFwifSIsImlzcyI6Ik5JQyBTYW5kYm94In0.1BEAu-eAeAH7Ufh9_v_t5E6DKTfNngi9zNt1nZXGPLB-JnBEMMt5P-CIY8Epb_36XTMY91RkQvi_7qtcoQxpkaeyw-Pvsnt0FjvTyeZAJcffhrpQGNdORGCS6_Htn12a-OsH8nrhty4E2m4rVYsZl7PRpZiMtkMgOzsgVu9ckC8Xy1V-vg2n_kXf-5QgrYNJvvpUyc-999T7xISwXunuLznPx8-eGctGyP_L01p3907om9wiaV0pzIhLbBF14ODkCVD9Iih7AXytTeQD0mxUMoFUqmwpMPAYqwv_usXxOqcVkSFTXHb8ntMkDjIBPX2pC74GwcfqEM5DFUWjPDq7EA';
+
+
+
+
+ <?php foreach($result as $r)
+
+$statecode = $this->db->select('stateCode')->where('state',$profile->stateCode)->get('statecode')->row()->stateCode;
+
+$stateid = $this->db->where('id',$r['customerId'])->get('customer_details')->row();
+
+$billtype = $this->db->select('bill_type')->where('status',1)->get('preference_settings')->row()->bill_type;
+
+
+$date = date('d/m/Y',strtotime($r['date']));
+   $mainquantity=[];
+   $mainrate=[];
+
+   $cgstAmounts = 0;
+   $sgstAmounts = 0;
+   $igstAmounts= 0;
+
+   $cgstAmount = 0;
+$sgstAmount = 0;
+$igstAmount = 0;
+$subTotal   = 0;
+
+   if($billtype=='Overall Tax')
+   {
+    foreach($result as $res)
+	{
+	
+     $hsnno = explode('||',$res['hsnno']);
+	 $qty = explode('||',$res['qty']);
+	 $uom = explode('||',$res['uom']);
+	 $rate = explode('||',$res['rate']);
+	 $amount = explode('||',$res['amount']);
+	 $taxamount = explode('||',$res['taxableamount']);
+	 $discountamount = explode('||',$res['discountamount']);
+	 $itemname = explode('||',$res['itemname']);
+	 $count = count($itemname);
+
+
+	 $no = 0;
+    for($i=0;$i<$count;$i++)
+	{  
+
+ 
+     if($r['gsttype']=="intrastate")
+	 { 
+
+       $amt = $taxableamount[$i];
+	  
+	   $tax = $res['igst'];
+	   
+	   $gst = ($amt * $tax)/100;
+	   $sgsts = $gst/2;
+	   $total = $amt + $gst;
+	
+
+
+
+		$cgstAmounts = (int)$sgts;
+		$sgstAmounts = (int)$sgts;
+		$igstAmounts = 0;
+	 }
+	 else
+	 {
+
+		$amt = $taxamount[$i];
+		
+		$tax = $res['igst'];
+		
+		$gst = ($amt * $tax)/100;
+		$total = $amt + $gst;
+	
+
+ 
+		$cgstAmounts = 0;
+		$sgstAmounts = 0;
+		$igstAmounts = (int)$gst;
+	 }
+
+		$no = $no+1;
+		$quanty = [
+			"SlNo" =>(string)$no, 
+			"IsServc" => "N", 
+			"HsnCd" => $hsnno[$i],  
+			"Qty" => (int)$qty[$i], 
+			"Unit" => $uom[$i], 
+			"UnitPrice" => (int)$rate[$i], 
+			"TotAmt" => (int)$amount[$i], 
+			"Discount" => (int)$discountamount[$i], 
+			"AssAmt" => (int)$amount[$i], 
+			"GstRt" => (int)$res['igst'],
+			"SgstAmt" => $sgstAmounts,
+			"IgstAmt" => $igstAmounts,
+			"CgstAmt" => $cgstAmounts,
+			"TotItemVal" => (int)$total , 
+
+				  ];
+				  array_push($mainquantity,$quanty);
+		}
+				
+				
+	}
+}
+else
+{
+      foreach($result as $res)
+	{
+		         
+     $hsnno = explode('||',$res['hsnno']);
+	 $qty = explode('||',$res['qty']);
+	 $uom = explode('||',$res['uom']);
+	 $rate = explode('||',$res['rate']);
+	 $amount = explode('||',$res['amount']);
+	 $taxamount = explode('||',$res['taxableamount']);
+	 $discountamount = explode('||',$res['discountamount']);
+	 $itemname = explode('||',$res['itemname']);
+	 $igst = explode('||',$res['igst']);
+	 $cgstamount = explode('||',$res['cgstamount']);
+	 $sgstamount = explode('||',$res['sgstamount']);
+	 $igstamount = explode('||',$res['igstamount']);
+	 $total = explode('||',$res['total']);
+	 $count = count($itemname);
+	 $no = 0;
+    for($i=0;$i<$count;$i++)
+	{
+
+		if($r['gsttype']=="intrastate")
+		{
+
+			
+			    $cgstAmounts = $cgstamount[$i];
+				 $sgstAmounts  = $sgstamount[$i];
+				 $igstAmounts=0;
+		}
+		else
+		{
+			$igstAmounts = $igstamount[$i];
+			$cgstAmounts = 0;
+			$sgstAmounts =0;
+			
+		
+		}
+
+
+		$no = $no+1;
+		$quanty = [
+			"SlNo" =>(string)$no, 
+			"IsServc" => "N", 
+			"HsnCd" => $hsnno[$i],  
+			"Qty" => (int)$qty[$i], 
+			"Unit" => $uom[$i], 
+			"UnitPrice" => (int)$rate[$i], 
+			"TotAmt" => (int)$amount[$i], 
+			"Discount" => (int)$discountamount[$i], 
+			"AssAmt" => (int)$taxamount[$i], 
+			"GstRt" => (int)$igst[$i], 
+			"SgstAmt" => $sgstAmounts,
+			"IgstAmt" => $igstAmounts,
+			"CgstAmt" => $cgstAmounts, 
+			"TotItemVal" => (int)$total[$i], 
+			];
+				  array_push($mainquantity , (object)$quanty);
+				//   array_push($mainrate, (object)$rate);
+	}
+}
+}
+
+
+
+
+
+
+if($r['gsttype']=="intrastate")
+{
+	foreach($result as $tax)
+	{
+		if($billtype=='Overall tax')
+		{
+		  $cgstAmount = $tax['cgstamount'];
+		  $sgstAmount = $tax['sgstamount'];
+		  $igstAmount = 0;
+		  $subTotal   = $tax['subtotal'];
+		}
+		else
+		{
+			$itemnames  = explode('||',$res['itemname']);
+			$cgstamounts = explode('||',$tax['cgstamount']);
+			$sgstamounts = explode('||',$tax['sgstamount']);
+			$igstamounts = explode('||',$tax['igstamount']);
+			$subtotals   = explode('||',$tax['taxableamount']);
+
+
+			$count = count($itemnames);
+			for($i=0;$i<$count;$i++)
+			{
+				 $c_amount  = $cgstamounts[$i];
+				 $s_amount  = $sgstamounts[$i];
+				 $sb_amount = $subtotals[$i]; 
+				 
+
+				 $cgstAmount += $c_amount;
+				 $sgstAmount += $s_amount;
+				 $subTotal   += $sb_amount;
+				 $igstAmount =0;
+
+			}
+
+			
+		}    
+	}
+}
+
+else 
+{
+	foreach($result as $tax)
+	{
+		if($billtype=='Overall tax')
+		{
+		  $cgstAmount = 0;
+		  $sgstAmount = 0;
+		  $igstAmount = $tax['igstamount'];
+		  $subTotal   = $tax['subtotal'];
+		}
+		else
+		{
+			$itemnames = explode('||',$res['itemname']);
+			$cgstamounts = explode('||',$tax['cgstamount']);
+			$sgstamounts = explode('||',$tax['sgstamount']);
+			$igstamounts= explode('||',$tax['igstamount']);
+			$subtotals   = explode('||',$tax['taxableamount']);
+
+			$count = count($itemnames);
+			for($i=0;$i<$count;$i++)
+			{
+			
+				 $i_amount = $igstamounts[$i];
+				 $sb_amount = $subtotals[$i];
+				 
+				 $cgstAmount = 0;
+				 $sgstAmount =0;
+				 $igstAmount +=$i_amount;
+				 $subTotal   += $sb_amount;
+			}
+		}    
+	}
+}
+
+$jayParsedAry = [
+  "Version" => "1.1", 
+  "TranDtls" => [
+		"TaxSch" => "GST", 
+		"SupTyp" => "B2B", 
+	
+		"EcmGstin" => null, 
+		"IgstOnIntra" => "N" 
+	 ], 
+  "DocDtls" => [
+		   "Typ" => "INV", 
+		   "No" => $r['invoiceno'], 
+		   "Dt" => $date
+		], 
+  "SellerDtls" => [
+			  "Gstin" => $profile->gstin, 
+			  "LglNm" => $profile->companyname, 
+			  
+			  "Addr1" => $profile->address1, 
+			  "Addr2" => $profile->address2, 
+			  "Loc" => $profile->city, 
+			  "Pin" => (int)$profile->pincode, 
+			  "Stcd" => $statecode, 
+			  "Ph" => $profile->phoneno, 
+			  "Em" => $profile->emailid 
+		   ], 
+  "BuyerDtls" => [
+				 "Gstin" => $stateid->gstno, 
+				 "LglNm" => $r['customername'], 
+				 "Pos" => $stateid->statecode, 
+				 "Addr1" => $stateid->address1, 
+				 "Addr2" => $stateid->address2, 
+				 "Loc" => $stateid->city, 
+				 "Pin" => (int)$stateid->pincode, 
+				 "Stcd" =>$stateid->statecode, 
+				 "Ph" => $stateid->phoneno, 
+				 "Em" => $stateid->email 
+			  ], 
+
+  
+      "ItemList" => $mainquantity,
+
+	  "ValDtls"=>[
+   
+
+        "AssVal" => $subTotal,
+        "CgstVal" => $cgstAmount,
+        "SgstVal" => $sgstAmount,
+        "IgstVal" => $igstAmount,
+        "OthChrg" => 0,
+        "RndOffAmt"=> 0,
+        "TotInvVal" => (int)$r['grandtotal']
+
+	],
+
+  "AddlDocDtls" => [
+																 [
+																	"Url" => "https://einv-apisandbox.nic.in", 
+																	"Docs" => "Test Doc", 
+																	"Info" => "Document Test" 
+																 ] 
+															  ], 
+
+]; 
+
+// echo json_encode($jayParsedAry);
+
+// $url = "https://api.mastergst.com/einvoice/type/GENERATE/version/V1_03?email=jp@idreamdevelopers.com";
+// $data = array($jayParsedAry);
+
+// $options = array(
+//   'http' => array(
+//     'header'  => "Content-type: application/x-www-form-urlencoded",
+//     'method'  => 'POST',
+//     'content' => http_build_query($data)
+//   )
+// );
+
+
+// $context  = stream_context_create($options);
+
+// $resp = file_get_contents($url, false, $context);
+
+
+
+
+$url = "https://api.mastergst.com/einvoice/type/GENERATE/version/V1_03?email=jp@idreamdevelopers.com";
+
+$curl = curl_init($url);
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+$headers = array(
+   "accept: */*",
+   "ip_address: 103.224. 35.181",
+   "client_id: e05ac7b6-ddcf-4294-80d4-453827fba2cf",
+   "client_secret: 1c1ade41-e062-499d-be41-1d89a1b29de2",
+   "username: mastergst",
+   "auth-token: hSew0vRXzK8Ss5qVejFAUj6qG",
+   "gstin: 29AABCT1332L000",
+   "Content-Type: application/json",
+);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+$data = json_encode($jayParsedAry);
+
+curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+//for debug only!
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+$resp = curl_exec($curl);
+curl_close($curl);
+echo $resp;
+?>
+
+

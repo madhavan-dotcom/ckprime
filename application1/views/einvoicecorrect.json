@@ -1,0 +1,87 @@
+{
+  "Version": "1.1",
+  "TranDtls": {
+    "TaxSch": "GST",
+    "SupTyp": "B2B",
+    "EcmGstin": null,
+    "IgstOnIntra": "N"
+  },
+  "DocDtls": {
+    "Typ": "INV",
+    "No": "INV/23-24/-016",
+    "Dt": "24/07/2023"
+  },
+  "SellerDtls": {
+    "Gstin": "29AABCT1332L000",
+    "LglNm": "IDREAM DEVELOPERS",
+    "Addr1": "91, Dr. Jaganathan Nagar, Civil Aerodrome post, CMC opp",
+    "Addr2": "Avinashi Road, Hopes College",
+    "Loc": "Coimbatore",
+    "Pin": 560001,
+    "Stcd": "29",
+    "Ph": "7373333321",
+    "Em": "info@idreamdevelopers.com"
+  },
+  "BuyerDtls": {
+    "Gstin": "33ADXPT3291N2ZJ",
+    "LglNm": "jos",
+    "Pos": "33",
+    "Addr1": "ukkadam",
+    "Addr2": "poo market",
+    "Loc": "coimbatore",
+    "Pin": 641014,
+    "Stcd": "33",
+    "Ph": "7810028222",
+    "Em": "jp@idreamdevelopers.com"
+  },
+  "ItemList": [
+    {
+      "SlNo": "1",
+      "IsServc": "N",
+      "HsnCd": "850300",
+      "Qty": 10,
+      "Unit": "nos",
+      "UnitPrice": 10,
+      "TotAmt": 100,
+      "Discount": 0,
+      "AssAmt": 112,
+      "GstRt": 12,
+      "SgstAmt": 6,
+      "IgstAmt": 12,
+      "CgstAmt": 6,
+      "TotItemVal": 112
+    },
+    {
+      "SlNo": "2",
+      "IsServc": "N",
+      "HsnCd": "850300",
+      "Qty": 10,
+      "Unit": "KGS",
+      "UnitPrice": 15000,
+      "TotAmt": 150000,
+      "Discount": 0,
+      "AssAmt": 177000,
+      "GstRt": 18,
+      "SgstAmt": 13500,
+      "IgstAmt": 27000,
+      "CgstAmt": 13500,
+      "TotItemVal": 177000
+    }
+  ],
+  "ValDtls": {
+    "AssVal": 150100,
+    "CgstVal": 13506,
+    "SgstVal": 13506,
+    "IgstVal": 0,
+    "OthChrg": 0,
+    "RndOffAmt": 0,
+    "TotInvVal": 177112
+  },
+  "AddlDocDtls": [
+    {
+      "Url": "https://einv-apisandbox.nic.in",
+      "Docs": "Test Doc",
+      "Info": "Document Test"
+    }
+  ]
+}
