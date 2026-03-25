@@ -1986,7 +1986,8 @@ $(this).focus();
 
     public function directPrint()
     {
-        $data['pre'] = $this->db->order_by('id', 'desc')->limit(1)->get('purchaseorder_details')->result();
+        $id = base64_decode($this->uri->segment(3));
+        $data['pre'] = $this->db->where('id', $id)->get('purchaseorder_details')->result();
         foreach ($data['pre'] as $b) {
             $number = $b->grandtotal;
         }
