@@ -261,6 +261,7 @@ for ($page = 1; $page <= $totalPages; $page++) {
                 <td align="center" style="border-right: 1px solid black;padding:3px;font-size:12px;">&nbsp;</td>
                 <td align="right" style="padding:3px;font-size:12px;">&nbsp;</td>
             </tr>
+
             
         <?php } ?>
     </table>
