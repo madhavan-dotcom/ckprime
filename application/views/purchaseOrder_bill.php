@@ -128,7 +128,7 @@ function renderHeader($profileimage, $profile, $bil, $addresss1, $addresss2, $ci
     </table>
 
     <table width="750" border="0" style="border:1px solid black;border-collapse: collapse;" align="center">
-        <tr>
+         <tr>
             <td width="80" style="border-right: 1px solid black;"><img src="<?php echo base_url(); ?>upload/<?php echo $profileimage->image; ?>" width="120" height="100" alt="logo" /></td>
             <td width="590" align="center" valign="center" style="font-size:12px;">
                 <strong style="font-size: 42px;color:#FF070B;font-family: 'Bgothm', sans-serif;"><?php echo $profile->companyname; ?></strong>
@@ -178,42 +178,27 @@ function renderHeader($profileimage, $profile, $bil, $addresss1, $addresss2, $ci
 }
 
 // Function to render footer (only for last page)
-function renderFooter($profile, $totalPages, $currentPage) {
-    if ($currentPage == $totalPages) {
-        ?>
-        <table width="750" align="center" style="border-collapse:collapse;border-bottom:1px solid black;border-right:1px solid black;border-left:1px solid black;">
-            <tr>
-                <td width="250" style="font-size:12px;border-right:1px solid black;"><b>&nbsp;&nbsp;</b></td>
-                <td width="250" style="font-size:12px;border-right:1px solid black;" align="center"><b>&nbsp;</b></td>
-                <td width="250" style="font-size:14px;border-right:1px solid black;font-weight:900;font-family: 'Bgothm', sans-serif;" align="center">For <b style="font-size:19px;font-family: 'Bgothm', sans-serif;"><?php echo $profile->companyname; ?></b></td>
-            </tr>
-            <tr>
-                <td width="250" height="100" valign="bottom" align="center" style="font-size:12px;border-right:1px solid black;"><b>&nbsp;&nbsp;Prepared By:</b></td>
-                <td width="250" style="font-size:12px;border-right:1px solid black;" valign="bottom" align="center"><b>&nbsp;&nbsp;Checked By:</b></td>
-                <td width="250" style="font-size:12px;border-right:1px solid black;" align="center" valign="bottom"><b>&nbsp;&nbsp;Approved By:</b></td>
-            </tr>
-        </table>
-        <?php
-    }
+function renderFooter($profile) {
+    ?>
+    <table width="750" align="center" style="border-collapse:collapse;border-bottom:1px solid black;border-right:1px solid black;border-left:1px solid black;">
+        <tr>
+            <td width="250" style="font-size:12px;border-right:1px solid black;"><b>&nbsp;&nbsp;</b></td>
+            <td width="250" style="font-size:12px;border-right:1px solid black;" align="center"><b>&nbsp;</b></td>
+            <td width="250" style="font-size:14px;border-right:1px solid black;font-weight:900;font-family: 'Bgothm', sans-serif;" align="center">For <b style="font-size:19px;font-family: 'Bgothm', sans-serif;"><?php echo $profile->companyname; ?></b></td>
+        </tr>
+        <tr>
+            <td width="250" height="100" valign="bottom" align="center" style="font-size:12px;border-right:1px solid black;"><b>&nbsp;&nbsp;Prepared By:</b></td>
+            <td width="250" style="font-size:12px;border-right:1px solid black;" valign="bottom" align="center"><b>&nbsp;&nbsp;Checked By:</b></td>
+            <td width="250" style="font-size:12px;border-right:1px solid black;" align="center" valign="bottom"><b>&nbsp;&nbsp;Approved By:</b></td>
+        </tr>
+    </table>
+    <?php
 }
 
-// Loop through pages
-for ($page = 1; $page <= $totalPages; $page++) {
-    // Add page break for pages after first
-    if ($page > 1) {
-        echo '<div class="page-break"></div>';
-    }
-    
-    // Render header for each page
-    renderHeader($profileimage, $profile, $bil, $addresss1, $addresss2, $citys, $states, $pincode, $mobileno, $gstnos, $statecode);
-    
-    // Calculate items for current page
-    $startIndex = ($page - 1) * $itemsPerPage;
-    $endIndex = min($startIndex + $itemsPerPage, $totalItems);
-    $pageItems = array_slice($allItems, $startIndex, $endIndex - $startIndex);
+// Function to render items table
+function renderItemsTable($items, $startIndex, $itemsPerPage, $totalItemsCount) {
     ?>
-    
-    <table width="750" height="650" align="center" style="border-bottom:1px solid black;border-top:1px solid black;border-right:1px solid black;border-left:1px solid black;border-collapse:collapse;">
+    <table width="750" align="center" style="border-bottom:1px solid black;border-top:1px solid black;border-right:1px solid black;border-left:1px solid black;border-collapse:collapse;">
         <tr style="font-size: 13px;">
             <td width="35" height="30" align="center" style="border-right:1px solid black;border-bottom:1px solid black;padding:5px;"><b>S.No</b></td>
             <td width="70" height="30" align="center" style="border-right:1px solid black;border-bottom:1px solid black;padding:5px;"><b>Product</b></td>
@@ -228,9 +213,11 @@ for ($page = 1; $page <= $totalPages; $page++) {
         
         <?php
         $itemNumber = $startIndex;
-        foreach ($pageItems as $item) {
+        $CI =& get_instance();
+        foreach ($items as $item) {
+            $getgradename = $CI->db->where('id', $item['grade'])->get('grade')->row();
             $itemNumber++;
-            $getgradename = $this->db->where('id', $item['grade'])->get('grade')->row();
+            
             ?>
             <tr style="height:1px;">
                 <td align="center" style="border-right: 1px solid black;padding:3px;font-size:12px;"><?php echo $itemNumber; ?></td>
@@ -247,7 +234,7 @@ for ($page = 1; $page <= $totalPages; $page++) {
         
         <!-- Fill empty rows if needed to maintain consistent table height -->
         <?php
-        $emptyRowsNeeded = $itemsPerPage - count($pageItems);
+        $emptyRowsNeeded = $itemsPerPage - count($items);
         for ($i = 0; $i < $emptyRowsNeeded; $i++) {
             ?>
             <tr style="height:1px;">
@@ -261,14 +248,46 @@ for ($page = 1; $page <= $totalPages; $page++) {
                 <td align="center" style="border-right: 1px solid black;padding:3px;font-size:12px;">&nbsp;</td>
                 <td align="right" style="padding:3px;font-size:12px;">&nbsp;</td>
             </tr>
-
-            
         <?php } ?>
     </table>
-    
     <?php
-    // Render footer for last page only
-    renderFooter($profile, $totalPages, $page);
+}
+
+// If total items is less than or equal to 10, show all on one page
+if ($totalItems <= $itemsPerPage) {
+    // Render header
+    renderHeader($profileimage, $profile, $bil, $addresss1, $addresss2, $citys, $states, $pincode, $mobileno, $gstnos, $statecode);
+    
+    // Render items table without fixed height
+    renderItemsTable($allItems, 0, $itemsPerPage, $totalItems);
+    
+    // Render footer on the same page
+    renderFooter($profile);
+    
+} else {
+    // If items > 10, use pagination
+    for ($page = 1; $page <= $totalPages; $page++) {
+        // Add page break for pages after first
+        if ($page > 1) {
+            echo '<div class="page-break"></div>';
+        }
+        
+        // Render header for each page
+        renderHeader($profileimage, $profile, $bil, $addresss1, $addresss2, $citys, $states, $pincode, $mobileno, $gstnos, $statecode);
+        
+        // Calculate items for current page
+        $startIndex = ($page - 1) * $itemsPerPage;
+        $endIndex = min($startIndex + $itemsPerPage, $totalItems);
+        $pageItems = array_slice($allItems, $startIndex, $endIndex - $startIndex);
+        
+        // Render items table without fixed height
+        renderItemsTable($pageItems, $startIndex, $itemsPerPage, $totalItems);
+        
+        // Render footer only on the last page
+        if ($page == $totalPages) {
+            renderFooter($profile);
+        }
+    }
 }
 ?>
 
