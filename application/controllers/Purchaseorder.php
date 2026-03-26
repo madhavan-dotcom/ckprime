@@ -1990,7 +1990,7 @@ $(this).focus();
         $data['pre'] = $this->db->where('id', $id)->get('purchaseorder_details')->result();
         foreach ($data['pre'] as $b) {
             $number = $b->grandtotal;
-        }
+        }   
         $no = round(0);
         // $point = round($number - $no, 2) * 100;
         $hundred = null;
